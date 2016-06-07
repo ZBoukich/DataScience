@@ -1,4 +1,5 @@
 import algorithms.Cosine;
+import algorithms.Euclidean;
 import algorithms.Pearson;
 import algorithms.Similarity;
 import model.UserPreference;
@@ -15,17 +16,19 @@ public class Recommender {
     private Similarity simAlgorithm;
     private int n;
     private int k;
+    private double thresHold;
 
     public static void main(String[] args) {
-        Recommender recommender = new Recommender(Constants.USERITEMDATA, Constants.SMALLDATA_DELIMITER, 6, new Cosine(), 3);
+        Recommender recommender = new Recommender(Constants.USERITEMDATA, Constants.SMALLDATA_DELIMITER, 3, 0.35, new Euclidean(), 3);
         recommender.recommend(7);
     }
 
-    public Recommender(String dataFile, String splitBy, int k, Similarity simAlgorithm, int n) {
+    public Recommender(String dataFile, String splitBy, int k, double thresHold, Similarity simAlgorithm, int n) {
         this.dataList = Utility.loadData(dataFile, splitBy);
         this.simAlgorithm = simAlgorithm;
         this.n = n;
         this.k = k;
+        this.thresHold = thresHold;
     }
 
     public void recommend(int targetUserId) {
@@ -43,7 +46,7 @@ public class Recommender {
 
         Object[] item = predictedItemRatingsList.stream().map(Map.Entry::getKey).limit(n).toArray();
         for (Object itemId : item) {
-            System.out.printf("Recommanded for you %s\n", itemId);
+            System.out.printf("Recommended for you %s\n", itemId);
         }
     }
 
@@ -53,7 +56,10 @@ public class Recommender {
         Set<Number> users = dataList.keySet();
         for (Number user : users) {
             if (user != targetUserId) {
-                distances.put(user, simAlgorithm.calculate(dataList.get(user), dataList.get(targetUserId)));
+                double temp = simAlgorithm.calculate(dataList.get(user), dataList.get(targetUserId));
+                if (temp >= thresHold) {
+                    distances.put(user, temp);
+                }
             }
         }
         nearestNeighborsList.addAll(distances.entrySet());
