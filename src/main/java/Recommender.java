@@ -1,6 +1,4 @@
-import algorithms.Cosine;
 import algorithms.Euclidean;
-import algorithms.Pearson;
 import algorithms.Similarity;
 import model.UserPreference;
 import utility.Utility;
@@ -19,7 +17,7 @@ public class Recommender {
     private double thresHold;
 
     public static void main(String[] args) {
-        Recommender recommender = new Recommender(Constants.USERITEMDATA, Constants.SMALLDATA_DELIMITER, 3, 0.35, new Euclidean(), 3);
+        Recommender recommender = new Recommender(Constants.USERITEMDATA, Constants.SMALLDATA_DELIMITER, 4, 0.35, new Euclidean(), 3);
         recommender.recommend(7);
     }
 
@@ -33,7 +31,7 @@ public class Recommender {
 
     public void recommend(int targetUserId) {
         List<Map.Entry<Number, Double>> nearestNeighborsList = computeNearestNeighbors(targetUserId);
-        System.out.println(" Neighbours : " + nearestNeighborsList);
+        System.out.println("\n Neighbours : " + nearestNeighborsList);
         Map<Number, Map<Number, Double>> predictedList = predictRating(targetUserId, nearestNeighborsList);
         List<Map.Entry<Number, Double>> predictedItemRatingsList = new ArrayList<>();
         for (Map<Number, Double> map : predictedList.values()) {
@@ -46,7 +44,7 @@ public class Recommender {
 
         Object[] item = predictedItemRatingsList.stream().map(Map.Entry::getKey).limit(n).toArray();
         for (Object itemId : item) {
-            System.out.printf("Recommended for you %s\n", itemId);
+            System.out.printf("Recommended for you item with id %s\n", itemId);
         }
     }
 
@@ -65,7 +63,12 @@ public class Recommender {
         nearestNeighborsList.addAll(distances.entrySet());
         Collections.sort(nearestNeighborsList, reverseOrderComparator);
         Collections.reverse(nearestNeighborsList);
-        return nearestNeighborsList.subList(0, k);
+        if (nearestNeighborsList.size() < k) {
+            System.out.printf("This user has less k nearest neighbors then you would think,the total is %d. You could modify the threshold",nearestNeighborsList.size());
+            return nearestNeighborsList;
+        } else {
+            return nearestNeighborsList.subList(0, k);
+        }
     }
 
     public Map<Number, Map<Number, Double>> predictRating(int targetUserID, List<Map.Entry<Number, Double>> nearestNeighborsList) {
