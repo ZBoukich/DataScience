@@ -38,7 +38,3 @@ public class Pearson implements Similarity {
     }
 
 }
-
-//denominator = sqrt(sum_x2 - (sum_x**2) / n) *
-//        sqrt(sum_y2 - (sum_y**2) / n)
-//        if denominator == 0:
