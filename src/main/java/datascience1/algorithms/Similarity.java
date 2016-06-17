@@ -1,8 +1,6 @@
-package algorithms;
+package datascience1.algorithms;
 
-import model.UserPreference;
-
-import java.util.HashMap;
+import datascience1.model.UserPreference;
 
 /**
  * Created by Zahey Boukich on 5-6-2016.

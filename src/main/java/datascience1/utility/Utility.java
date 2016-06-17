@@ -1,10 +1,9 @@
-package utility;
+package datascience1.utility;
 
-import model.Item;
-import model.TestModel;
-import model.UserPreference;
+import datascience1.model.Item;
+import datascience1.model.TestModel;
+import datascience1.model.UserPreference;
 
-import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -25,11 +24,11 @@ public class Utility {
             BufferedReader reader = new BufferedReader(new FileReader(fileToParse));
             while ((line = reader.readLine()) != null) {
                 String[] tokens = line.split(splitBy);
-
                 UserPreference userPreference = new UserPreference();
                 int userId = Integer.parseInt(tokens[0]);
                 int itemId = Integer.parseInt(tokens[1]);
                 double rating = Double.parseDouble(tokens[2]);
+
                 if (userPreferenceHashMap.containsKey(userId)) {
                     userPreferenceHashMap.get(userId).addRating(itemId, rating);
                 } else {

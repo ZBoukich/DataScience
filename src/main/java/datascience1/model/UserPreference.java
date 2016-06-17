@@ -1,6 +1,5 @@
-package model;
+package datascience1.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.*;

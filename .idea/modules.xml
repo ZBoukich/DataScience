@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/DataScience1.iml" filepath="$PROJECT_DIR$/DataScience1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DataScience.iml" filepath="$PROJECT_DIR$/DataScience.iml" />
     </modules>
   </component>
 </project>

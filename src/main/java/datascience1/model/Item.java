@@ -1,4 +1,4 @@
-package model;
+package datascience1.model;
 
 import lombok.Data;
 

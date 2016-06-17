@@ -24,8 +24,16 @@
         <processorPath useClasspath="true" />
         <module name="DataScience1" />
       </profile>
+      <profile default="false" name="Annotation profile for DataScience" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="DataScience" />
+      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="DataScience" target="1.8" />
       <module name="DataScience1" target="1.8" />
     </bytecodeTargetLevel>
   </component>

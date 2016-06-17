@@ -1,7 +1,9 @@
-import algorithms.Euclidean;
-import algorithms.Similarity;
-import model.UserPreference;
-import utility.Utility;
+package datascience1;
+
+import datascience1.algorithms.Euclidean;
+import datascience1.algorithms.Similarity;
+import datascience1.model.UserPreference;
+import datascience1.utility.Utility;
 
 import java.util.*;
 
@@ -19,6 +21,8 @@ public class Recommender {
     public static void main(String[] args) {
         Recommender recommender = new Recommender(Constants.USERITEMDATA, Constants.SMALLDATA_DELIMITER, 4, 0.35, new Euclidean(), 3);
         recommender.recommend(7);
+//        recommender.n =1;
+//        recommender.recommend(7);
     }
 
     public Recommender(String dataFile, String splitBy, int k, double thresHold, Similarity simAlgorithm, int n) {
