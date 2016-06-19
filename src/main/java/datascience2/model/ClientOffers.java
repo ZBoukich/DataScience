@@ -10,9 +10,10 @@ import java.util.Map;
  */
 @Data
 public class ClientOffers {
-    public Map<Integer, Integer> offers = new HashMap<>();
+    public Map<Integer, Double> offers = new HashMap<>();
 
-    public void addOffers(int offerId, int clientOffer) {
+    public void addOffers(int offerId, double clientOffer) {
         offers.put(offerId, clientOffer);
     }
+
 }
