@@ -37,6 +37,7 @@ public class Recommender {
         List<Map.Entry<Number, Double>> nearestNeighborsList = computeNearestNeighbors(targetUserId);
         System.out.println("\n Neighbours : " + nearestNeighborsList);
         Map<Number, Map<Number, Double>> predictedList = predictRating(targetUserId, nearestNeighborsList);
+
         List<Map.Entry<Number, Double>> predictedItemRatingsList = new ArrayList<>();
         for (Map<Number, Double> map : predictedList.values()) {
             for (Map.Entry entry : map.entrySet()) {

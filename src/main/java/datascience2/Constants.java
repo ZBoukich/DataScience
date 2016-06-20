@@ -5,5 +5,5 @@ package datascience2;
  */
 public class Constants {
     public static final String WINEDATA = "WineData.txt";
-    public static final String DELIMITER = ",";
+    public static final String FILEDELIMITER = ",";
 }
