@@ -1,7 +1,7 @@
-package datascience2;
+package datascience2.part1;
 
-import datascience2.model.ClientOffers;
-import datascience2.utility.Utility;
+import datascience2.part1.model.ClientOffers;
+import datascience2.part1.utility.Utility;
 
 import java.util.*;
 
@@ -35,11 +35,6 @@ public class KClusterer {
         postProcess();
     }
 
-    public static void main(String[] args) {
-        KClusterer kClusterer = new KClusterer(Constants.WINEDATA, 2, 10, Constants.FILEDELIMITER);
-    }
-
-
     private List<ClientOffers> getInitialCentroidsRandomly(int k) {
         List<ClientOffers> randomCentroidsList = new ArrayList<>();
         for (int i = 0; i < k; i++) {
@@ -58,12 +53,14 @@ public class KClusterer {
             int cluster = 0;
             double temp = 0.0;
             for (int i = 0; i < centroids.size(); i++) {
-                double sim;
+                double sim = 0.0;
                 cluster++;
                 if (cluster > k) {
                     cluster = 1;
                 }
-                sim = calculateEuclideanDistance(client.getValue(), centroids.get(i));
+                if (client.getValue() != null && centroids.get(i) != null) {
+                    sim = calculateEuclideanDistance(client.getValue(), centroids.get(i));
+                }
                 if (sim > temp) {
                     temp = sim;
                     clusterNumber = cluster;
@@ -132,7 +129,7 @@ public class KClusterer {
             this.iterationNumber++;
             this.centroids = updateCentroids();
             assignClientOffersToCluster();
-            if (iterationNumber > 10 || pointsChanged / tempClusters.size() < 0.01) {
+            if (iterationNumber > 25 || pointsChanged / tempClusters.size() < 0.00) {
                 done = true;
             }
         }
@@ -185,7 +182,7 @@ public class KClusterer {
 
     private void finishPostProces(Map<Integer, Map<Integer, Double>> lists) {
         Comparator<Map.Entry<Integer, Double>> reverseOrderComparator = (x, y) -> x.getValue().compareTo(y.getValue());
-        int clusterIndex =0;
+        int clusterIndex = 0;
         System.out.printf("\nFinal SSE: %s \n", this.smallestSse);
         System.out.println(" ");
         for (Map<Integer, Double> map : lists.values()) {
@@ -198,10 +195,10 @@ public class KClusterer {
             Collections.reverse(orderedList);
 
             System.out.printf("Cluster= %s\n", clusterIndex);
-            Object[] item = orderedList.stream().filter(x->x.getValue()>3).map(Map.Entry::getKey).toArray();
+            Object[] item = orderedList.stream().filter(x -> x.getValue() > 3).map(Map.Entry::getKey).toArray();
             for (Object itemId : item) {
                 Integer value = map.get(itemId).intValue();
-                System.out.printf("OFFER %d -> bought %d times\n",itemId,value);
+                System.out.printf("OFFER %d -> bought %d times\n", itemId, value);
             }
             System.out.println(" ");
         }
@@ -218,11 +215,11 @@ public class KClusterer {
         return resultList;
     }
 
-    private void test(){
+    private void test() {
         smallestSseClusters.entrySet().stream()
                 .forEach(x -> x.getValue().entrySet()
                         .stream()
-                        .forEach(y-> System.out.println(" key= " + x.getKey() + " " + y.getKey() + " " +  y.getValue()+  "\n")));
+                        .forEach(y -> System.out.println(" key= " + x.getKey() + " " + y.getKey() + " " + y.getValue() + "\n")));
         System.out.println("\n");
     }
 

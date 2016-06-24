@@ -1,6 +1,6 @@
-package datascience2.utility;
+package datascience2.part1.utility;
 
-import datascience2.model.ClientOffers;
+import datascience2.part1.model.ClientOffers;
 
 import java.io.*;
 import java.util.HashMap;

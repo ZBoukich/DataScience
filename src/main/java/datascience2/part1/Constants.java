@@ -1,4 +1,4 @@
-package datascience2;
+package datascience2.part1;
 
 /**
  * Created by Zahey Boukich on 17-6-2016.
