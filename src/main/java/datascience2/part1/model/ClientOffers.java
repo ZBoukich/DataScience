@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Godfather on 17-6-2016.
+ * Created by Godfather on 17-4-2017.
  */
 @Data
 public class ClientOffers {

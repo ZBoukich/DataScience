@@ -6,86 +6,100 @@ import datascience2.part1.utility.Utility;
 import java.util.*;
 
 /**
- * Created by Zahey Boukich on 16-6-2016.
+ * Created by Zahey Boukich on 19-4-2017.
  */
 public class KClusterer {
 
-    private Map<Integer, ClientOffers> dataList;
+    private Map<Integer, ClientOffers> data;
+    private List<ClientOffers> centroids;
     private double sse;
-    private double smallestSse;
+    private double smallestSse = 9999;
     private int iterationNumber;
     private int pointsChanged = 0;
     private int k;
     private Map<Integer, Map<Integer, ClientOffers>> smallestSseClusters = new HashMap<>();
-    private Map<Integer, Map<Integer, ClientOffers>> tempClusters;
-    private List<ClientOffers> centroids;
+    private Map<Integer, Map<Integer, ClientOffers>> resultingClusters;
 
 
-    public KClusterer(String dataFile, int k, int iterateXTimes, String splitBy) {
-        this.dataList = Utility.loadData(dataFile, splitBy);
+    public KClusterer(int k, int iterations, String dataFile, String splitBy) {
+        this.data = Utility.loadData(dataFile, splitBy);
         this.k = k;
-        int xIterations = iterateXTimes;
+        int xIterations = iterations;
+
         while (xIterations > 0) {
-            tempClusters = new HashMap<>();
+            resultingClusters = new HashMap<>();
             this.centroids = getInitialCentroidsRandomly(k);
-            assignClientOffersToCluster();
+
+            assignClientsToCluster();
             goCluster();
             xIterations--;
+            // System.out.println("KMEANS RUNNING----------------------" + xIterations);
         }
+
         postProcess();
     }
+
 
     private List<ClientOffers> getInitialCentroidsRandomly(int k) {
         List<ClientOffers> randomCentroidsList = new ArrayList<>();
         for (int i = 0; i < k; i++) {
-            int randomClient = new Random().nextInt(dataList.size());
-            ClientOffers clientOffers = dataList.get(randomClient);
+            int randomClient = new Random().nextInt(data.size());
+            ClientOffers clientOffers = data.get(randomClient);
             randomCentroidsList.add(clientOffers);
         }
         return randomCentroidsList;
     }
 
-    private void assignClientOffersToCluster() {
+
+    private void assignClientsToCluster() {
         this.sse = 0;
         this.pointsChanged = 0;
-        for (Map.Entry<Integer, ClientOffers> client : dataList.entrySet()) {
-            int clusterNumber = 0;
-            int cluster = 0;
-            double temp = 0.0;
+
+
+        for (Map.Entry<Integer, ClientOffers> client : data.entrySet()) {
+            int clusterNr = 0;
+            double error = 9999;
+
+            int counter = 0;
+
             for (int i = 0; i < centroids.size(); i++) {
-                double sim = 0.0;
-                cluster++;
-                if (cluster > k) {
-                    cluster = 1;
+
+                double distance = 0.0;
+                counter++;
+                if (counter > k) {
+                    counter = 1;
                 }
                 if (client.getValue() != null && centroids.get(i) != null) {
-                    sim = calculateEuclideanDistance(client.getValue(), centroids.get(i));
+                    distance = calculateEuclideanDistance(client.getValue(), centroids.get(i));
                 }
-                if (sim > temp) {
-                    temp = sim;
-                    clusterNumber = cluster;
+                if (distance < error) {
+                    error = distance;
+                    clusterNr = counter;
                 }
             }
-            if (tempClusters.containsKey(clusterNumber)) {
-                if (!tempClusters.get(clusterNumber).containsKey(client.getKey())) {
+
+            if (resultingClusters.containsKey(clusterNr)) {
+                if (!resultingClusters.get(clusterNr).containsKey(client.getKey())) {
                     this.pointsChanged++;
                 }
-                tempClusters.get(clusterNumber).put(client.getKey(), client.getValue());
-
+                resultingClusters.get(clusterNr).put(client.getKey(), client.getValue());
 
             } else {
                 HashMap<Integer, ClientOffers> nextClient = new HashMap<>();
                 nextClient.put(client.getKey(), client.getValue());
-                tempClusters.put(clusterNumber, nextClient);
+                resultingClusters.put(clusterNr, nextClient);
                 this.pointsChanged++;
             }
-            this.sse += Math.pow(temp, 2);
+
+            this.sse += Math.pow(error, 2);
         }
+
     }
+
 
     private List<ClientOffers> updateCentroids() {
         List<ClientOffers> updatedCentroids = new ArrayList<>();
-        for (Map<Integer, ClientOffers> cluster : tempClusters.values()) {
+        for (Map<Integer, ClientOffers> cluster : resultingClusters.values()) {
             ClientOffers updatedCentroid = updateCentroidsOfCluster(cluster);
             updatedCentroids.add(updatedCentroid);
         }
@@ -93,6 +107,7 @@ public class KClusterer {
     }
 
     private ClientOffers updateCentroidsOfCluster(Map<Integer, ClientOffers> cluster) {
+        // Offerid and list of offers for example Winenr 1 is x times offered
         Map<Integer, List<Double>> sumMapList = new HashMap<>();
         for (Map.Entry value : cluster.entrySet()) {
             int counter = 0;
@@ -127,30 +142,34 @@ public class KClusterer {
         boolean done = false;
         while (!done) {
             this.iterationNumber++;
+
             this.centroids = updateCentroids();
-            assignClientOffersToCluster();
-            if (iterationNumber > 25 || pointsChanged / tempClusters.size() < 0.00) {
+            assignClientsToCluster();
+
+            if (iterationNumber > 100 || pointsChanged / resultingClusters.size() < 0.01) {
                 done = true;
             }
+            //System.out.println("ALGORITHM ITERATION----------------------" + iterationNumber);
         }
+
         calculateSmallestSse(sse);
-        this.smallestSse = this.sse;
     }
 
     private void calculateSmallestSse(double sse) {
         if (sse < this.smallestSse) {
             this.smallestSse = sse;
-            this.smallestSseClusters = this.tempClusters;
+            this.smallestSseClusters = this.resultingClusters;
         }
+        System.out.println("SSE----------------------" + smallestSse);
     }
 
-    public double calculateEuclideanDistance(ClientOffers target, ClientOffers user) {
+    public double calculateEuclideanDistance(ClientOffers target, ClientOffers centroid) {
         double distance = 0;
         for (Integer key : target.getOffers().keySet()) {
-            distance += Math.pow(Math.abs(target.getOffers().get(key) - user.getOffers().get(key)), 2);
+            distance += Math.pow(Math.abs(target.getOffers().get(key) - centroid.getOffers().get(key)), 2);
         }
         distance = Math.sqrt(distance);
-        return 1 / (distance + 1);
+        return distance;
     }
 
     private void postProcess() {
@@ -213,14 +232,6 @@ public class KClusterer {
             resultList.put(index, sumValue);
         }
         return resultList;
-    }
-
-    private void test() {
-        smallestSseClusters.entrySet().stream()
-                .forEach(x -> x.getValue().entrySet()
-                        .stream()
-                        .forEach(y -> System.out.println(" key= " + x.getKey() + " " + y.getKey() + " " + y.getValue() + "\n")));
-        System.out.println("\n");
     }
 
 
