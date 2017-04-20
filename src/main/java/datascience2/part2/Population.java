@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Arrays;
 
 /**
- * Created by Zahey Boukich on 22-6-2016.
+ * Created by Zahey Boukich on 20-4-2017.
  */
 
 @Data
@@ -18,12 +18,10 @@ public class Population {
     }
 
     public Population initializePopulation() {
-        if (individuals != null) {
             for (int i = 0; i < individuals.length; i++) {
-                individuals[i] = new Individual(5,32).initializeIndividual();
+                individuals[i] = new Individual(5).initializeRandomIndividual();
             }
             sortIndividualByFitness();
-        }
         return this;
     }
 
